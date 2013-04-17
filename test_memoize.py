@@ -9,8 +9,29 @@ class TestMemoize(unittest.TestCase):
             return x
         else:
             return self.fib(x-1) + self.fib(x-2)
+
+    @memoize(version=1)
+    def append(self, *args, **kwargs):
+        """Toy function to test kwargs"""
+        ret = kwargs.copy()
+        for i in xrange(len(args)):
+            ret[i] = args[i]
+
+        return ret
+
+    @memoize(version=1)
+    def unhashable(self, a, b):
+        return (a,b)
+
     def test_memoize(self):
-        print self.fib(5)
+        self.assertEqual(55, self.fib(10))
+
+    def test_kwargs(self):
+        print self.append('a', 'b', c=5, d=6)
+
+    def test_unhashable(self):
+        self.unhashable([3, 4], 5)
+
 
 if __name__ == "__main__":
     unittest.main()
