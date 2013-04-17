@@ -27,10 +27,17 @@ class TestMemoize(unittest.TestCase):
         self.assertEqual(55, self.fib(10))
 
     def test_kwargs(self):
-        print self.append('a', 'b', c=5, d=6)
+        expected = {0: 'a',
+                    1: 'b',
+                    'c' : 5,
+                    'd' : 6}
+        self.assertEqual(expected,
+                         self.append('a', 'b', c=5, d=6))
 
     def test_unhashable(self):
-        self.unhashable([3, 4], 5)
+        expected = ([3,4], 5)
+        self.assertEqual(expected,
+                         self.unhashable([3, 4], 5))
 
 
 if __name__ == "__main__":
