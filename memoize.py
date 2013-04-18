@@ -1,4 +1,3 @@
-import collections
 import functools
 import os.path
 
@@ -8,10 +7,11 @@ _logger = logging.getLogger("memoize")
 
 try:
     from cPickle import dumps, loads, dump, load
-except:
+except ImportError:
     from pickle import dumps, loads, dump, load
 
 # originally from http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
+
 
 def memoize(version, filepath=None):
     def f(func):
@@ -24,11 +24,12 @@ def memoize(version, filepath=None):
         return memoize_inner(func, version=version, filepath=arg_filepath)
     return f
 
+
 class memoize_inner(object):
-    '''Decorator. Caches a function's return value each time it is called.
+    """Decorator. Caches a function's return value each time it is called.
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
-    '''
+    """
     def __init__(self, func, version, filepath):
         self.func = func
         self.version = version
@@ -41,7 +42,7 @@ class memoize_inner(object):
                     cache, version = load(f)
                     if version == self.version:
                         self.cache = cache
-        except Exception, e:
+        except Exception as e:
             # oh well
             _logger.exception(e)
 
@@ -58,7 +59,7 @@ class memoize_inner(object):
             else:
                 key = (args, kwargs)
             arg_hash = dumps(key)
-        except Exception, e:
+        except Exception as e:
             # arguments are unpickleable
             _logger.exception(e)
             return self.func(*args, **kwargs)
@@ -66,7 +67,7 @@ class memoize_inner(object):
         if arg_hash in self.cache:
             try:
                 return loads(self.cache[arg_hash])
-            except Exception, e:
+            except Exception as e:
                 _logger.exception(e)
                 return self.func(*args, **kwargs)
 
@@ -74,7 +75,7 @@ class memoize_inner(object):
         ret = self.func(*args, **kwargs)
         try:
             ret_hash = dumps(ret)
-        except Exception, e:
+        except Exception as e:
             _logger.exception(e)
             return ret
 
@@ -87,9 +88,10 @@ class memoize_inner(object):
         return ret
 
     def __repr__(self):
-        '''Return the function's docstring.'''
+        """Return the function's docstring."""
         return self.func.__doc__
+
     def __get__(self, obj, objtype):
-        '''Support instance methods.'''
+        """Support instance methods."""
         return functools.partial(self.call_instance_method, obj)
 
